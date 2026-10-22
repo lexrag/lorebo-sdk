@@ -1,0 +1,81 @@
+{
+  "name": "lorebo-sdk",
+  "version": "0.1.0",
+  "description": "Save and retrieve Lorebo knowledge from your application with any LLM",
+  "license": "MIT",
+  "author": "LexRAG",
+  "homepage": "https://lorebo.com/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lexrag/lorebo-sdk.git",
+    "directory": "typescript"
+  },
+  "bugs": "https://github.com/lexrag/lorebo-sdk/issues",
+  "keywords": [
+    "lorebo",
+    "knowledge-base",
+    "mcp",
+    "llm",
+    "agents",
+    "ai-sdk"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/lorebo.d.ts",
+      "import": "./dist/lorebo.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
+    },
+    "./records": {
+      "types": "./dist/records.d.ts",
+      "import": "./dist/records.js"
+    },
+    "./session": {
+      "types": "./dist/session.d.ts",
+      "import": "./dist/session.js"
+    },
+    "./skills": {
+      "types": "./dist/skills.d.ts",
+      "import": "./dist/skills.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "fflate": "^0.8.2",
+    "zod": "^4.1.8"
+  },
+  "peerDependencies": {
+    "ai": "^7.0.0"
+  },
+  "devDependencies": {
+    "@ai-sdk/provider": "^4.0.31",
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^24.19.2",
+    "ai": "^7.0.148",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^3.2.7"
+  }
+}

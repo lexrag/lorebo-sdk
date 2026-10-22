@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lorebo-sdk"
+version = "0.1.0"
+description = "Save and retrieve Lorebo knowledge from your application with any LLM"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "LexRAG" }]
+requires-python = ">=3.12"
+keywords = ["lorebo", "knowledge-base", "mcp", "llm", "agents", "pydantic-ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: AsyncIO",
+    "Framework :: Pydantic",
+    "Typing :: Typed",
+]
+dependencies = [
+    "fastmcp-slim[client]>=4.1",
+    "httpx>=0.28",
+    "pydantic>=2.11",
+    "pydantic-ai-slim[mcp]>=2.59",
+]
+
+[project.optional-dependencies]
+openai = ["pydantic-ai-slim[openai]>=2.59"]
+anthropic = ["pydantic-ai-slim[anthropic]>=2.59"]
+google = ["pydantic-ai-slim[google]>=2.59"]
+groq = ["pydantic-ai-slim[groq]>=2.59"]
+mistral = ["pydantic-ai-slim[mistral]>=2.59"]
+bedrock = ["pydantic-ai-slim[bedrock]>=2.59"]
+
+[project.urls]
+Homepage = "https://lorebo.com/"
+Documentation = "https://lorebo.com/docs/"
+Repository = "https://github.com/lexrag/lorebo-sdk"
+Issues = "https://github.com/lexrag/lorebo-sdk/issues"
+
+[dependency-groups]
+dev = [
+    "fastmcp-slim[server]>=4.1",
+    "mypy>=1.17",
+    "pytest>=8.4",
+    "pytest-asyncio>=1.0",
+    "ruff>=0.12",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lorebo_sdk"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/lorebo_sdk", "tests", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
