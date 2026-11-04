@@ -74,6 +74,9 @@ jobs:
         run: |
           tar -xOf "dist/npm/lorebo-sdk-$RELEASE_VERSION.tgz" package/LICENSE | cmp - LICENSE
           tar -xOf "dist/npm/lorebo-sdk-$RELEASE_VERSION.tgz" package/README.md | cmp - README.md
+      - name: Verify npm publication metadata and artifact identity
+        working-directory: typescript
+        run: npm test -- --run test/publication.test.ts
       - uses: actions/upload-artifact@v4
         with:
           name: sdk-${{ github.sha }}
@@ -107,6 +110,9 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: sdk-${{ github.sha }}
@@ -115,9 +121,9 @@ jobs:
         with:
           node-version: 24
       - if: inputs.publish_npm
-        run: npm publish dist/npm/*.tgz --access public
+        run: bash scripts/publish-npm.sh dist/npm/*.tgz
       - name: Verify npm OIDC authentication
         if: inputs.verify_npm_trust
         run: |
-          npm publish dist/npm/*.tgz --access public --dry-run --force --loglevel=verbose 2>&1 | tee npm-auth-check.log
+          bash scripts/publish-npm.sh dist/npm/*.tgz --dry-run --force --loglevel=verbose 2>&1 | tee npm-auth-check.log
           grep -F 'Successfully retrieved and set token' npm-auth-check.log
