@@ -58,11 +58,19 @@ accepted npm tarball from the workflow artifact, and run:
 
 ```bash
 npm login --auth-type=web
-npm publish ./lorebo-sdk-<version>.tgz --access public
+bash scripts/publish-npm.sh ./lorebo-sdk-<version>.tgz
 ```
 
 Complete the owner's browser/2FA challenge, then configure npm Trusted
 Publishing for future versions. Do not upload a placeholder package.
+
+Use the checked-in script for both interactive and OIDC publication. Direct
+`npm publish <tarball>` adds Pacote's local `_from` and `_resolved` paths to
+registry metadata, even when the argument is relative. The script extracts
+the accepted archive, rejects local installation metadata in its manifest,
+checks that repacking preserves the exact archive bytes, and publishes the
+directory with lifecycle scripts disabled. Use the build's platform and Node/npm versions;
+if the byte comparison fails, investigate instead of bypassing it.
 
 If one registry fails, inspect its actual state before retrying and select
 only the unfinished registry. Published versions are immutable; never replace
@@ -90,6 +98,14 @@ the public imports. Verify the rendered README, license and supported
 connection example. Record the source tag, package digests, CI run and observed
 results in the release notes. A source test alone does not prove a real model
 provider or deployed Lorebo connection; keep those checks explicit.
+
+Check the outgoing publication request in the loopback registry test, not only
+the packed package.json: npm can add metadata after reading the archive. Both
+that request and the public version metadata must omit `_from`, `_resolved`
+and `_where`. The test also verifies byte-identical distribution upload and
+refusal before upload when the approved archive would change. Existing
+published versions are not overwritten to repair metadata; request targeted
+redaction from npm Support if sensitive local paths have already been exposed.
 
 Official setup references: [PyPI Trusted Publishers](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)
 and [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/).
