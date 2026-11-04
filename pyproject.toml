@@ -32,7 +32,7 @@ dependencies = [
 [project.optional-dependencies]
 openai = ["pydantic-ai-slim[openai]>=2.59"]
 anthropic = ["pydantic-ai-slim[anthropic]>=2.59"]
-google = ["pydantic-ai-slim[google]>=2.59"]
+google = ["pydantic-ai-slim[google]>=2.59", "pyasn1>=0.6.5"]
 groq = ["pydantic-ai-slim[groq]>=2.59"]
 mistral = ["pydantic-ai-slim[mistral]>=2.59"]
 bedrock = ["pydantic-ai-slim[bedrock]>=2.59"]
