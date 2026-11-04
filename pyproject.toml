@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lorebo-sdk"
-version = "0.1.0"
+version = "0.1.1"
 description = "Save and retrieve Lorebo knowledge from your application with any LLM"
 readme = "README.md"
 license = "MIT"
@@ -32,7 +32,7 @@ dependencies = [
 [project.optional-dependencies]
 openai = ["pydantic-ai-slim[openai]>=2.59"]
 anthropic = ["pydantic-ai-slim[anthropic]>=2.59"]
-google = ["pydantic-ai-slim[google]>=2.59"]
+google = ["pydantic-ai-slim[google]>=2.59", "pyasn1>=0.6.5"]
 groq = ["pydantic-ai-slim[groq]>=2.59"]
 mistral = ["pydantic-ai-slim[mistral]>=2.59"]
 bedrock = ["pydantic-ai-slim[bedrock]>=2.59"]

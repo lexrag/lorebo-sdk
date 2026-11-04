@@ -20,7 +20,7 @@ export type LoreboSession = {
 
 export type ConnectLorebo = () => Promise<LoreboSession>;
 
-const CLIENT_INFO = { name: "lorebo-sdk", version: "0.1.0" };
+const CLIENT_INFO = { name: "lorebo-sdk", version: "0.1.1" };
 
 const toolInputSchema = z.looseObject({ type: z.literal("object") });
 

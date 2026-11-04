@@ -163,7 +163,7 @@ Each page has an `id`, a `title` and the `base_ref` (`baseRef` in TypeScript)
 of the base that holds it. The SDK builds these lists from Lorebo's responses,
 not from the model's text.
 
-In SDK 0.1.0, observed references include search hits and listings. An entry in
+In SDK 0.1.1, observed references include search hits and listings. An entry in
 `sources` does not guarantee that the complete page was read or that every
 answer claim was verified against it. Read and inspect the referenced pages
 when your application requires full evidence.
