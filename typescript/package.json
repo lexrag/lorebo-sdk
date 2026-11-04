@@ -1,6 +1,6 @@
 {
   "name": "lorebo-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Save and retrieve Lorebo knowledge from your application with any LLM",
   "license": "MIT",
   "author": "LexRAG",
