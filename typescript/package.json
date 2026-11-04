@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "description": "Save and retrieve Lorebo knowledge from your application with any LLM",
   "license": "MIT",
-  "author": "LexRAG",
+  "author": "LEXRAG",
   "homepage": "https://github.com/lexrag/lorebo-sdk#readme",
   "repository": {
     "type": "git",
