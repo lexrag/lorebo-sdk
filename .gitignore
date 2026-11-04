@@ -10,3 +10,5 @@ dist/
 node_modules/
 .idea/
 .env
+typescript/README.md
+typescript/LICENSE

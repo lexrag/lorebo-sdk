@@ -4,7 +4,7 @@
   "description": "Save and retrieve Lorebo knowledge from your application with any LLM",
   "license": "MIT",
   "author": "LexRAG",
-  "homepage": "https://lorebo.com/",
+  "homepage": "https://github.com/lexrag/lorebo-sdk#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lexrag/lorebo-sdk.git",
@@ -52,11 +52,11 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --config .prettierrc.json --write . ../README.md ../docs",
+    "format:check": "prettier --config .prettierrc.json --check . ../README.md ../docs",
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
-    "prepack": "npm run build"
+    "prepack": "npm run build && node --input-type=module -e \"import { copyFileSync } from 'node:fs'; copyFileSync('../README.md', 'README.md'); copyFileSync('../LICENSE', 'LICENSE');\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
@@ -68,14 +68,17 @@
   },
   "devDependencies": {
     "@ai-sdk/provider": "^4.0.31",
-    "@eslint/js": "^9.39.5",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.19.2",
     "ai": "^7.0.148",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.10",
     "typescript": "~6.0",
-    "typescript-eslint": "^8.72.0",
+    "typescript-eslint": "^8.72.1",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "minimatch": "^11.0.4"
   }
 }

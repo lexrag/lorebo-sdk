@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
@@ -19,6 +20,9 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
+      - run: uvx pip-audit --path "$(uv run python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')"
+      - run: uv build
+      - run: uvx twine check dist/*
 
   typescript:
     runs-on: ubuntu-latest
@@ -33,5 +37,7 @@ jobs:
           cache: npm
           cache-dependency-path: typescript/package-lock.json
       - run: npm ci
+      - run: npm audit --audit-level=moderate
       - run: npm run check
       - run: npm run build
+      - run: npm pack --dry-run
