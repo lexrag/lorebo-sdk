@@ -15,6 +15,10 @@ on:
         description: Publish the TypeScript distribution to npm
         default: false
         type: boolean
+      verify_npm_trust:
+        description: Verify npm OIDC authentication without publishing a version
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -33,6 +37,7 @@ jobs:
     env:
       RELEASE_VERSION: ${{ inputs.version }}
       PUBLISH_REQUESTED: ${{ inputs.publish_python || inputs.publish_npm }}
+      VERIFY_NPM_TRUST: ${{ inputs.verify_npm_trust }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -49,6 +54,11 @@ jobs:
           test "$(node -p "require('./typescript/package.json').version")" = "$RELEASE_VERSION"
           if [ "$PUBLISH_REQUESTED" = true ]; then
             test "$GITHUB_REF" = "refs/tags/v$RELEASE_VERSION"
+          fi
+          if [ "$VERIFY_NPM_TRUST" = true ]; then
+            test "$PUBLISH_REQUESTED" = false
+          fi
+          if [ "$PUBLISH_REQUESTED" = true ] || [ "$VERIFY_NPM_TRUST" = true ]; then
             git merge-base --is-ancestor HEAD origin/main
           fi
       - run: uv build --out-dir dist/python
@@ -89,7 +99,7 @@ jobs:
           packages-dir: dist/python/
 
   npm:
-    if: inputs.publish_npm
+    if: inputs.publish_npm || inputs.verify_npm_trust
     needs: build
     runs-on: ubuntu-latest
     environment: npm
@@ -104,4 +114,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: npm publish dist/npm/*.tgz --access public
+      - if: inputs.publish_npm
+        run: npm publish dist/npm/*.tgz --access public
+      - name: Verify npm OIDC authentication
+        if: inputs.verify_npm_trust
+        run: |
+          npm publish dist/npm/*.tgz --access public --dry-run --force --loglevel=verbose 2>&1 | tee npm-auth-check.log
+          grep -F 'Successfully retrieved and set token' npm-auth-check.log

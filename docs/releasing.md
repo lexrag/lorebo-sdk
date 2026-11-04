@@ -68,6 +68,20 @@ If one registry fails, inspect its actual state before retrying and select
 only the unfinished registry. Published versions are immutable; never replace
 their bytes or silently increment a version to hide a failed partial release.
 
+## Verify npm trust without another release
+
+After configuring npm trust, create a validation-only tag such as
+`v<version>-publication-check` at reviewed main. Run Publish SDK at that tag,
+with both publication inputs false and `verify_npm_trust` true. The npm
+environment still requires maintainer review and a permitted tag. This mode
+cannot be combined with either publication input.
+
+The workflow uses npm's ordinary OIDC exchange through `npm publish --dry-run`.
+It checks the CLI's successful token-exchange result instead of accepting an
+unauthenticated dry run. `--force` only skips the existing-version preflight;
+`--dry-run` prevents upload or tag changes. No package version or GitHub release
+is created. The validation tag does not replace the immutable release tag.
+
 ## Accept the result
 
 Verify both anonymous registry metadata and the downloaded files against the
