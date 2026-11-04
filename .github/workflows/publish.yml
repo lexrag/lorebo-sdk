@@ -1,0 +1,107 @@
+name: Publish SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SDK version from both package manifests
+        required: true
+        type: string
+      publish_python:
+        description: Publish the Python distributions to PyPI
+        default: false
+        type: boolean
+      publish_npm:
+        description: Publish the TypeScript distribution to npm
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdk-publication
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/check.yml
+
+  build:
+    needs: checks
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      PUBLISH_REQUESTED: ${{ inputs.publish_python || inputs.publish_npm }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+      - name: Validate release identity
+        run: |
+          test "$(uv version --short)" = "$RELEASE_VERSION"
+          test "$(node -p "require('./typescript/package.json').version")" = "$RELEASE_VERSION"
+          if [ "$PUBLISH_REQUESTED" = true ]; then
+            test "$GITHUB_REF" = "refs/tags/v$RELEASE_VERSION"
+            git merge-base --is-ancestor HEAD origin/main
+          fi
+      - run: uv build --out-dir dist/python
+      - run: uvx twine check dist/python/*
+      - run: npm ci
+        working-directory: typescript
+      - name: Build the npm distribution
+        working-directory: typescript
+        run: |
+          mkdir -p ../dist/npm
+          npm pack --pack-destination ../dist/npm
+      - name: Verify npm documentation and license
+        run: |
+          tar -xOf "dist/npm/lorebo-sdk-$RELEASE_VERSION.tgz" package/LICENSE | cmp - LICENSE
+          tar -xOf "dist/npm/lorebo-sdk-$RELEASE_VERSION.tgz" package/README.md | cmp - README.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  pypi:
+    if: inputs.publish_python
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-${{ github.sha }}
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/python/
+
+  npm:
+    if: inputs.publish_npm
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-${{ github.sha }}
+          path: dist
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm publish dist/npm/*.tgz --access public
