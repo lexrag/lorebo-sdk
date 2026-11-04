@@ -73,6 +73,12 @@ deployment perimeter. No provider API key or Lorebo credential belongs in source
 code; configure model-provider credentials through the provider's environment
 settings.
 
+Your chosen model deployment receives your prompt and the MCP tool results it
+requests, which can include note content and search snippets. Keeping Lorebo's
+database local does not make external model requests local. The SDK does not
+add redaction; choose the model deployment and provider data policy for the
+knowledge it can access.
+
 ## Quick start
 
 ### Python
@@ -148,14 +154,19 @@ console.log(explored.answer);
 
 `explore` returns the answer and its sources:
 
-| Field     | Meaning                                             |
-| --------- | --------------------------------------------------- |
-| `answer`  | Plain-text answer for your user.                    |
-| `sources` | Pages the answer relies on, each read in this call. |
+| Field     | Meaning                                                           |
+| --------- | ----------------------------------------------------------------- |
+| `answer`  | Plain-text answer for your user.                                  |
+| `sources` | Page references selected from tool results observed in this call. |
 
 Each page has an `id`, a `title` and the `base_ref` (`baseRef` in TypeScript)
 of the base that holds it. The SDK builds these lists from Lorebo's responses,
-not from the model's text, so they only contain pages that exist.
+not from the model's text.
+
+In SDK 0.1.0, observed references include search hits and listings. An entry in
+`sources` does not guarantee that the complete page was read or that every
+answer claim was verified against it. Read and inspect the referenced pages
+when your application requires full evidence.
 
 Summaries and answers are plain text written for your user, without the model's
 reasoning, tool names or page IDs. Nothing is printed to your console.
@@ -252,6 +263,11 @@ npm pack --dry-run
 
 Package publication is described in
 [Releasing](https://github.com/lexrag/lorebo-sdk/blob/main/docs/releasing.md).
+
+## Security
+
+See the [security reporting policy](https://github.com/lexrag/lorebo-sdk/blob/main/SECURITY.md)
+for private vulnerability reporting.
 
 ## License
 
